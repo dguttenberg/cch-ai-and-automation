@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doner | AI Studio Capabilities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000531;
+  --bg-card: #060A3A;
+  --bg-card-2: #080E45;
+  --green: #20FE8F;
+  --green-dim: #18C06D;
+  --green-glow: rgba(32,254,143,0.12);
+  --text: #E6E7E8;
+  --text-dim: #8A8C8E;
+  --white: #FFFFFF;
+  --purple: #555EFF;
+  --purple-light: #8B91FF;
+  --rule: #1A1F5A;
+  --rule-light: rgba(26,31,90,0.6);
+  --font: 'Space Grotesk', -apple-system, sans-serif;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--rule) var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-weight:400;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--green);color:var(--bg)}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;width:0%;height:3px;background:var(--green);z-index:1000;transition:width .15s ease-out;box-shadow:0 0 12px var(--green-glow)}
+
+/* NAV DOTS */
+#nav-dots{position:fixed;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:999}
+.nav-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--text-dim);background:transparent;cursor:pointer;transition:all .3s ease;position:relative}
+.nav-dot:hover{border-color:var(--green);transform:scale(1.3)}
+.nav-dot.active{border-color:var(--green);background:var(--green);box-shadow:0 0 8px var(--green-glow)}
+.nav-dot .tooltip{position:absolute;right:20px;top:50%;transform:translateY(-50%);background:var(--bg-card);border:1px solid var(--rule);color:var(--text);padding:3px 8px;border-radius:4px;font-size:10px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease;letter-spacing:.05em;text-transform:uppercase}
+.nav-dot:hover .tooltip{opacity:1}
+
+/* SECTIONS */
+section{min-height:100vh;display:flex;align-items:center;padding:80px 0;position:relative}
+.container{width:100%;max-width:920px;margin:0 auto;padding:0 48px}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+.reveal-delay-4{transition-delay:.4s}
+.reveal-delay-5{transition-delay:.5s}
+.reveal-delay-6{transition-delay:.6s}
+
+/* TYPOGRAPHY */
+.section-label{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.hero-headline{font-size:clamp(36px,6vw,58px);font-weight:700;color:var(--green);line-height:1.05;margin-bottom:20px}
+.section-headline{font-size:clamp(24px,3.5vw,34px);font-weight:700;color:var(--white);line-height:1.15;margin-bottom:14px}
+.rule{width:72px;height:2px;background:var(--green);margin-bottom:28px;border:none}
+.subtitle{font-size:16px;color:var(--text);line-height:1.55;max-width:600px}
+.pull-quote{font-size:13px;font-style:italic;color:var(--green);line-height:1.5;margin-top:28px;padding-left:14px;border-left:2px solid var(--green-dim)}
+.footnote{font-size:11.5px;font-style:italic;color:var(--text-dim);line-height:1.5;margin-top:20px}
+
+/* BULLET LIST */
+.bullet-list{list-style:none;margin-top:20px}
+.bullet-list li{padding:10px 0 10px 22px;font-size:14px;color:var(--text);line-height:1.5;position:relative;border-bottom:1px solid var(--rule-light)}
+.bullet-list li:last-child{border-bottom:none}
+.bullet-list li::before{content:'';position:absolute;left:0;top:16px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+
+/* CAPABILITY CARD */
+.cap-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:32px;position:relative;overflow:hidden;margin-top:12px}
+.cap-card::before{content:'';position:absolute;left:0;top:0;width:4px;height:100%}
+.cap-card.green::before{background:var(--green)}
+.cap-card.purple::before{background:var(--purple-light)}
+.cap-card-label{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.cap-card.green .cap-card-label{color:var(--green)}
+.cap-card.purple .cap-card-label{color:var(--purple-light)}
+.cap-card-title{font-size:22px;font-weight:700;color:var(--white);margin-bottom:14px;line-height:1.2}
+.cap-card-body{font-size:14px;color:var(--text);line-height:1.6;max-width:640px}
+.cap-card-body p{margin-bottom:12px}
+.cap-card-body p:last-child{margin-bottom:0}
+
+/* ATTRIBUTE GRID */
+.attr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.attr{background:rgba(255,255,255,.03);border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.attr-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.attr-value{font-size:13px;font-weight:600;color:var(--white);line-height:1.3}
+.cap-card.green .attr-value{color:var(--green)}
+.cap-card.purple .attr-value{color:var(--purple-light)}
+
+/* USE CASE TAGS */
+.use-cases{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.use-tag{font-size:11px;font-weight:500;padding:4px 12px;border-radius:100px;letter-spacing:.04em}
+.cap-card.green .use-tag{background:rgba(32,254,143,.08);border:1px solid rgba(32,254,143,.2);color:var(--green)}
+.cap-card.purple .use-tag{background:rgba(139,145,255,.08);border:1px solid rgba(139,145,255,.2);color:var(--purple-light)}
+
+/* COMPARISON TABLE */
+.compare-table{width:100%;margin-top:28px;border-collapse:collapse}
+.compare-table th{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);padding:10px 16px;text-align:left;border-bottom:2px solid var(--rule)}
+.compare-table th:nth-child(2){color:var(--green)}
+.compare-table th:nth-child(3){color:var(--purple-light)}
+.compare-table td{font-size:13px;color:var(--text);padding:12px 16px;border-bottom:1px solid var(--rule-light);vertical-align:top;line-height:1.5}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table td:first-child{font-weight:500;color:var(--white);font-size:12px;letter-spacing:.04em}
+.compare-table td:nth-child(2){color:var(--green)}
+.compare-table td:nth-child(3){color:var(--purple-light)}
+
+/* NUCLEUS SECTION */
+.nucleus-wrap{margin-top:28px;background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:32px;position:relative;overflow:hidden}
+.nucleus-wrap::after{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(32,254,143,.06),transparent 70%);pointer-events:none}
+.nucleus-title{font-size:20px;font-weight:700;color:var(--white);margin-bottom:12px}
+.nucleus-body{font-size:14px;color:var(--text);line-height:1.65;max-width:680px}
+.nucleus-body p{margin-bottom:12px}
+.nucleus-body p:last-child{margin-bottom:0}
+
+/* NUCLEUS PILLARS */
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.pillar{background:rgba(32,254,143,.04);border:1px solid rgba(32,254,143,.12);border-radius:6px;padding:16px}
+.pillar-title{font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--green);margin-bottom:6px}
+.pillar-body{font-size:12px;color:var(--text-dim);line-height:1.5}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:28px}
+.pricing-card{background:var(--bg-card);border:1px solid var(--rule);border-radius:8px;padding:24px}
+.pricing-card-label{font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
+.pricing-card.green .pricing-card-label{color:var(--green)}
+.pricing-card.purple .pricing-card-label{color:var(--purple-light)}
+.pricing-card-title{font-size:28px;font-weight:700;margin-bottom:4px}
+.pricing-card.green .pricing-card-title{color:var(--green)}
+.pricing-card.purple .pricing-card-title{color:var(--purple-light)}
+.pricing-card-sub{font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:16px}
+.pricing-card-note{font-size:12px;color:var(--text);line-height:1.55;padding-top:16px;border-top:1px solid var(--rule)}
+
+/* CLOSER */
+.closer-headline{font-size:clamp(28px,4.5vw,44px);font-weight:700;color:var(--green);line-height:1.1;margin-bottom:24px}
+.closer-body{font-size:16px;color:var(--text);line-height:1.6;max-width:560px}
+.contact-line{margin-top:32px;font-size:13px;color:var(--text-dim)}
+.contact-line a{color:var(--green);text-decoration:none;font-weight:500}
+.contact-line a:hover{text-decoration:underline}
+
+/* FOOTER */
+.site-footer{padding:36px 0;text-align:center;font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;border-top:1px solid var(--rule)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .container{padding:0 24px}
+  section{padding:56px 0;min-height:auto}
+  .attr-grid{grid-template-columns:1fr 1fr}
+  .pillars{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  #nav-dots{display:none}
+  .compare-table{display:none}
+}
+@media(max-width:480px){
+  .container{padding:0 18px}
+  .attr-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<nav id="nav-dots"></nav>
+
+<!-- HERO -->
+<section id="s-hero" data-label="Overview">
+  <div class="container">
+    <p class="section-label reveal">Doner Studio AI Capabilities</p>
+    <h1 class="hero-headline reveal reveal-delay-1">Two tools.<br>One system.<br>Built for scale.</h1>
+    <hr class="rule reveal reveal-delay-2">
+    <p class="subtitle reveal reveal-delay-3">Studio Automation and AI Content Systems are distinct capabilities. They solve different problems, cost differently, and are right for different moments. Understanding the difference is the first step to using both well.</p>
+    <p class="pull-quote reveal reveal-delay-4">The real power is not in either tool alone. It is in the intelligence layer that makes both of them smarter.</p>
+  </div>
+</section>
+
+<!-- STUDIO AUTOMATION -->
+<section id="s-automation" data-label="Studio Automation">
+  <div class="container">
+    <p class="section-label reveal">Capability 01</p>
+    <h2 class="section-headline reveal reveal-delay-1">Studio Automation</h2>
+    <hr class="rule reveal reveal-delay-2">
+
+    <div class="cap-card green reveal reveal-delay-2">
+      <p class="cap-card-label">What it is</p>
+      <h3 class="cap-card-title">Template-driven versioning at scale</h3>
+      <div class="cap-card-body">
+        <p>Studio Automation is the ability to create a template embedded with enough logic to produce hundreds of unique executions by swapping pre-defined variables: copy, images, logos, animation sequences, color, format, or any other element we decide in advance.</p>
+        <p>Think of it as a versioning mastermind. The creative thinking happens once, at a high level. The system handles every variation downstream. Every output is controlled, on-brand, and reviewable before it goes anywhere.</p>
+        <p>There is no generative risk here. No AI hallucination, no unexpected imagery, no brand inconsistency. The system only does what it has been told it can do.</p>
+      </div>
+
+      <div class="attr-grid">
+        <div class="attr">
+          <p class="attr-label">Speed</p>
+          <p class="attr-value">Days, not weeks, for hundreds of assets</p>
+        </div>
+        <div class="attr">
+          <p class="attr-label">Control</p>
+          <p class="attr-value">Fully governed. No surprises.</p>
+        </div>
+        <div class="attr">
+          <p class="attr-label">Cost at scale</p>
+          <p class="attr-value">As low as $75 per unique ad</p>
+        </div>
+      </div>
+
+      <div class="use-cases">
+        <span class="use-tag">Always-on content</span>
+        <span class="use-tag">Seasonal campaigns</span>
+        <span class="use-tag">Multi-market versioning</span>
+        <span class="use-tag">Performance optimization cycles</span>
+        <span class="use-tag">Regulated content environments</span>
+        <span class="use-tag">High-volume recurring campaigns</span>
+      </div>
+    </div>
+
+    <p class="pull-quote reveal reveal-delay-4">Best for: work you know you will do over and over again. Once the template is built, every iteration after that costs a fraction of the original.</p>
+  </div>
+</section>
+
+<!-- AI CONTENT SYSTEMS -->
+<section id="s-ai" data-label="AI Content Systems">
+  <div class="container">
+    <p class="section-label reveal">Capability 02</p>
+    <h2 class="section-headline reveal reveal-delay-1">AI Content Systems</h2>
+    <hr class="rule reveal reveal-delay-2">
+
+    <div class="cap-card purple reveal reveal-delay-2">
+      <p class="cap-card-label">What it is</p>
+      <h3 class="cap-card-title">Generative capability trained on your brand</h3>
+      <div class="cap-card-body">
+        <p>AI Content Systems use AI to build custom models for copy, image, layout, and video that are trained on a specific brand, campaign strategy, aesthetic, and rules. Unlike Studio Automation, these systems are generative. They do not pull from a fixed template. They produce net-new content from a prompt.</p>
+        <p>This opens up possibilities that automation cannot match: exploring new creative directions quickly, producing one-of-a-kind executions, and augmenting creative thinkers so they can manage creative workflows rather than manually produce every single asset.</p>
+        <p>The human does not disappear in this model. The human moves up the stack. Creative leadership sets the parameters, reviews the outputs, and refines the system over time. The craft and the judgment remain human. The volume no longer has to.</p>
+      </div>
+
+      <div class="attr-grid">
+        <div class="attr">
+          <p class="attr-label">Output type</p>
+          <p class="attr-value">Net-new generative content</p>
+        </div>
+        <div class="attr">
+          <p class="attr-label">Human role</p>
+          <p class="attr-value">Creative director, not maker</p>
+        </div>
+        <div class="attr">
+          <p class="attr-label">Best for</p>
+          <p class="attr-value">Scale with creative flexibility</p>
+        </div>
+      </div>
+
+      <div class="use-cases">
+        <span class="use-tag">Personalization at scale</span>
+        <span class="use-tag">Rapid concept exploration</span>
+        <span class="use-tag">Augmenting creative output</span>
+        <span class="use-tag">Brand-trained image generation</span>
+        <span class="use-tag">Video and motion content</span>
+        <span class="use-tag">Feeding automation pipelines</span>
+      </div>
+    </div>
+
+    <p class="pull-quote reveal reveal-delay-4">Best for: when the brief changes frequently, when creative variety matters, or when volume is too high for any team to produce manually.</p>
+  </div>
+</section>
+
+<!-- HOW THEY COMPARE -->
+<section id="s-compare" data-label="Comparison">
+  <div class="container">
+    <p class="section-label reveal">Side by Side</p>
+    <h2 class="section-headline reveal reveal-delay-1">Choosing the right tool</h2>
+    <hr class="rule reveal reveal-delay-2">
+    <p class="subtitle reveal reveal-delay-3">These are not competing approaches. Many programs benefit from both, with Studio Automation handling volume execution and AI Content Systems powering creative exploration and variation.</p>
+
+    <table class="compare-table reveal reveal-delay-3">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Studio Automation</th>
+          <th>AI Content Systems</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>How it generates</td>
+          <td>Pre-defined template logic</td>
+          <td>Generative AI, prompt-driven</td>
+        </tr>
+        <tr>
+          <td>Creative variability</td>
+          <td>Controlled, pre-determined</td>
+          <td>Open, exploratory, flexible</td>
+        </tr>
+        <tr>
+          <td>Brand risk</td>
+          <td>Minimal — outputs governed by template</td>
+          <td>Managed — models trained on brand rules</td>
+        </tr>
+        <tr>
+          <td>Best volume point</td>
+          <td>High-volume repeatable formats</td>
+          <td>Variable volume, diverse outputs</td>
+        </tr>
+        <tr>
+          <td>Setup investment</td>
+          <td>Template build and logic mapping</td>
+          <td>Brand model training and system design</td>
+        </tr>
+        <tr>
+          <td>Unit economics</td>
+          <td>From $75/ad at scale</td>
+          <td>Scoped by craft and technology separately</td>
+        </tr>
+        <tr>
+          <td>Human role</td>
+          <td>Creative direction + QA</td>
+          <td>Creative direction + prompt management</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Mobile-friendly version -->
+    <ul class="bullet-list" style="display:none" id="compare-mobile">
+      <li><strong style="color:var(--white)">Studio Automation</strong> is best when the format is known, the volume is high, and consistency is critical. Output is controlled by template logic.</li>
+      <li><strong style="color:var(--white)">AI Content Systems</strong> are best when creative variety matters, briefs shift frequently, or volume exceeds what teams can manually produce.</li>
+      <li><strong style="color:var(--white)">Both</strong> keep humans in a director role. Neither is a replacement for creative leadership.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- BRAND INTELLIGENCE NUCLEUS -->
+<section id="s-nucleus" data-label="Brand Intelligence">
+  <div class="container">
+    <p class="section-label reveal">The Bigger Opportunity</p>
+    <h2 class="section-headline reveal reveal-delay-1">Brand Intelligence</h2>
+    <hr class="rule reveal reveal-delay-2">
+    <p class="subtitle reveal reveal-delay-3">Both tools become significantly more powerful when they operate from a shared center of gravity.</p>
+
+    <div class="nucleus-wrap reveal reveal-delay-3">
+      <h3 class="nucleus-title">What a Brand Intelligence system actually is</h3>
+      <div class="nucleus-body">
+        <p>Most AI tools are general-purpose. They know a lot about everything and not enough about your brand. Brand Intelligence is the work of encoding what your brand actually knows: its strategy, voice, visual language, competitive positioning, audience truths, and creative guardrails. Not as a PDF someone has to read. As a living system that every AI tool draws from.</p>
+        <p>The result is AI that thinks like your agency does about your brand, not like a general tool that has read your website.</p>
+        <p>This is what makes Studio Automation outputs consistently on-brand even across thousands of assets. It is what makes AI-generated content feel like it came from someone who understood the brief. It is what allows a program to scale without losing the thinking behind it.</p>
+        <p>For a brand like Cincinnati Children's, this means the system understands not just the visual standards, but the emotional register, the audience segmentation, the regulatory environment, and the strategic priorities driving any given campaign. That context travels with every asset that leaves the system.</p>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <p class="pillar-title">Strategic Memory</p>
+          <p class="pillar-body">Brand truths, audience positioning, and campaign logic encoded once and available everywhere.</p>
+        </div>
+        <div class="pillar">
+          <p class="pillar-title">Creative Guardrails</p>
+          <p class="pillar-body">Voice, tone, visual standards, and do-not-cross rules built into every workflow.</p>
+        </div>
+        <div class="pillar">
+          <p class="pillar-title">Continuous Learning</p>
+          <p class="pillar-body">The system improves as work is produced, reviewed, and refined over time.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="pull-quote reveal reveal-delay-5">This is not a separate product. It is the foundation that makes both Studio Automation and AI Content Systems more accurate, more consistent, and more defensible.</p>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="s-pricing" data-label="Investment">
+  <div class="container">
+    <p class="section-label reveal">Investment</p>
+    <h2 class="section-headline reveal reveal-delay-1">How we think about cost</h2>
+    <hr class="rule reveal reveal-delay-2">
+    <p class="subtitle reveal reveal-delay-3">Pricing reflects the nature of each system. Automation economics improve dramatically at volume. AI workstreams are scoped differently because the value is different.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card green reveal reveal-delay-3">
+        <p class="pricing-card-label">Studio Automation</p>
+        <p class="pricing-card-title">From $75</p>
+        <p class="pricing-card-sub">Per unique ad, at qualifying volume. Requires upfront template build investment, which is amortized across the program.</p>
+        <p class="pricing-card-note">The more a template is used, the lower the per-unit cost. Programs with consistent formats and recurring messaging see the strongest economics.</p>
+      </div>
+      <div class="pricing-card purple reveal reveal-delay-4">
+        <p class="pricing-card-label">AI Content Systems</p>
+        <p class="pricing-card-title">Scoped by program</p>
+        <p class="pricing-card-sub">AI workstreams are not priced per asset. They are scoped around two components: craft and technology.</p>
+        <p class="pricing-card-note">We separate what requires human creative judgment from what technology can scale, and price each fairly. This model is designed to give clients a more competitive total cost than traditional production while preserving the quality of the work that matters.</p>
+      </div>
+    </div>
+
+    <p class="footnote reveal reveal-delay-5">All engagements begin with a scoping conversation to determine which approach, or combination of approaches, fits the program. Pricing is specific to format, volume, and complexity.</p>
+  </div>
+</section>
+
+<!-- CLOSER -->
+<section id="s-closer" data-label="Next Step">
+  <div class="container">
+    <hr class="rule reveal">
+    <h2 class="closer-headline reveal reveal-delay-1">Ready to talk about<br>what fits your program.</h2>
+    <p class="closer-body reveal reveal-delay-2">The right starting point depends on your volume, your formats, and where you are in the campaign cycle. We can walk through both capabilities against a real brief to make the answer concrete.</p>
+    <p class="contact-line reveal reveal-delay-3">
+      Jen Schulties, VP Media &bull; <a href="mailto:jen.schulties@doner.com">jen.schulties@doner.com</a>
+    </p>
+  </div>
+</section>
+
+<footer class="site-footer"><span>Doner &bull; Confidential</span></footer>
+
+<script>
+// Progress bar
+const progressBar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = h > 0 ? (window.scrollY / h) * 100 + '%' : '0%';
+});
+
+// Reveal
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: .12, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// Nav dots
+const sections = document.querySelectorAll('section[id]');
+const dotsC = document.getElementById('nav-dots');
+sections.forEach(sec => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot';
+  d.innerHTML = `<span class="tooltip">${sec.dataset.label || ''}</span>`;
+  d.addEventListener('click', () => sec.scrollIntoView({ behavior: 'smooth' }));
+  dotsC.appendChild(d);
+});
+const dots = dotsC.querySelectorAll('.nav-dot');
+const secObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const idx = Array.from(sections).indexOf(e.target);
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, { threshold: .3 });
+sections.forEach(sec => secObs.observe(sec));
+
+// Mobile compare toggle
+if (window.innerWidth <= 768) {
+  document.getElementById('compare-mobile').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
